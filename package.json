@@ -1,0 +1,26 @@
+{
+  "name": "rpg-ops",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Elfi-11/Devops.git"
+  },
+  "keywords": [
+    "game",
+    "rpg"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Elfi-11/Devops/issues"
+  },
+  "homepage": "https://github.com/Elfi-11/Devops#readme",
+  "dependencies": {
+    "@inquirer/prompts": "^7.4.0"
+  }
+}
