@@ -1,33 +1,45 @@
 import { select, Separator } from '@inquirer/prompts';
 import { createTeams } from './creationEquipe.js';
+import { createLobby } from './lobby.js';
+import { startGame, endGame } from './game.js';
 
-const answer = await select({
-  message: 'Bienvenue dans le RPG !',
-  choices: [
-    {
-      name: 'Nouvelle partie',
-      value: 'new_game',
-      description: 'Créer une nouvelle partie.',
-    },
-    new Separator(),
-    {
-      name: 'Quitter',
-      value: 'quit',
-      description: 'Quitter le jeu.',
-    },
-  ],
-});
+async function mainMenu() {
+  const answer = await select({
+    message: 'Bienvenue dans le RPG !',
+    choices: [
+      {
+        name: 'Lancer un combat',
+        value: 'start_battle',
+        description: 'Lancer un combat entre deux personnages.',
+      },
+      new Separator(),
+      {
+        name: 'Quitter',
+        value: 'quit',
+        description: 'Quitter le jeu.',
+      },
+    ],
+  });
 
-switch (answer) {
-  case 'new_game':
-    console.log('Démarrage d\'une nouvelle partie...');
-    try {
-      await createTeams();
-    } catch (error) {
-      console.error('Erreur lors de la création des équipes:', error.message);
-    }
-    break;
-  case 'quit':
-    console.log('Au revoir !');
-    break;
+  switch (answer) {
+    case 'start_battle':
+      console.log('Préparation du combat...');
+      try {
+        const { player, enemy } = await createLobby();
+        
+        const result = await startGame(player, enemy);
+        
+        endGame(result);
+        
+        return mainMenu();
+      } catch (error) {
+        console.error('Erreur lors du combat:', error.message);
+        return mainMenu();
+      }
+    case 'quit':
+      console.log('Au revoir !');
+      return;
+  }
 }
+
+mainMenu();
