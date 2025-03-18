@@ -23,9 +23,9 @@ export class Character {
 
 export const characterList = [
     new Character("Mathys", "Mage", 100, 10, 10),
-    new Character("Rémi", "Mage noir", 150, 10, 15),
-    new Character("Micael", "Voleur", 200, 10, 5),
-    new Character("Romain", "Guerrier", 200, 10, 5),
-    new Character("Marina", "Barbare", 200, 10, 5),
-    new Character("François", "Golem", 200, 10, 5),
+    new Character("Rémi", "Mage noir", 100, 10, 15),
+    new Character("Micael", "Voleur", 100, 10, 5),
+    new Character("Romain", "Guerrier", 100, 10, 5),
+    new Character("Marina", "Barbare", 100, 10, 5),
+    new Character("François", "Golem", 100, 10, 5),
 ];
