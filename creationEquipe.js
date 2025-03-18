@@ -1,4 +1,5 @@
 import { input, select } from '@inquirer/prompts';
+import { characterList } from './characters.js';
 
 class Team {
     constructor(name) {
@@ -16,19 +17,11 @@ class Team {
             console.log("Aucun personnage dans cette équipe");
         } else {
             this.characters.forEach((char, index) => {
-                console.log(`${index + 1}. ${char.name} (${char.class})`);
+                console.log(`${index + 1}. ${char.name} (${char.classe})`);
             });
         }
     }
 }
-
-// Personnages de test
-const testCharacters = [
-    { name: "Gandalf", class: "Mage" },
-    { name: "Aragorn", class: "Guerrier" },
-    { name: "Legolas", class: "Archer" },
-    { name: "Gimli", class: "Nain" }
-];
 
 export async function createTeams() {
     try {
@@ -51,9 +44,9 @@ export async function createTeams() {
         console.log(`Équipe 2: ${team2.name}`);
 
         // Ajout des personnages aux équipes
-        for (const character of testCharacters) {
+        for (const character of characterList) {
             const teamChoice = await select({
-                message: `Dans quelle équipe voulez-vous placer ${character.name}?`,
+                message: `Dans quelle équipe voulez-vous placer ${character.name} (${character.classe})?`,
                 choices: [
                     { name: team1.name, value: 'team1' },
                     { name: team2.name, value: 'team2' }
