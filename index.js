@@ -7,13 +7,13 @@ const answer = await select({
     {
       name: 'Nouvelle partie',
       value: 'new_game',
-      description: 'npm is the most popular package manager',
+      description: 'Créer une nouvelle partie.',
     },
     new Separator(),
     {
       name: 'Quitter',
       value: 'quit',
-      description: 'yarn is an awesome package manager',
+      description: 'Quitter le jeu.',
     },
   ],
 });
