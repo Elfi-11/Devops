@@ -1,5 +1,5 @@
 import { select, Separator } from '@inquirer/prompts';
-// Or
+import { createTeams } from './creationEquipe.js';
 
 const answer = await select({
   message: 'Bienvenue dans le RPG !',
@@ -18,4 +18,16 @@ const answer = await select({
   ],
 });
 
-console.log(answer);
+switch (answer) {
+  case 'new_game':
+    console.log('Démarrage d\'une nouvelle partie...');
+    try {
+      await createTeams();
+    } catch (error) {
+      console.error('Erreur lors de la création des équipes:', error.message);
+    }
+    break;
+  case 'quit':
+    console.log('Au revoir !');
+    break;
+}
