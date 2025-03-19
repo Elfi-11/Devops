@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { AudioService } from './audioService.js';
 
 export async function startGame(player, enemy) {
     console.clear();
@@ -81,6 +82,13 @@ async function processAttack(attacker, defender) {
 
 export function endGame(result) {
     console.log(chalk.bold.yellow(`\n🏆 === FIN DU COMBAT === 🏆`));
+    
+    try {
+        // Jouer la musique de victoire
+        AudioService.play('victory.mp3');
+    } catch (error) {
+        // Ignorer silencieusement les erreurs audio
+    }
     
     const winnerEmoji = getClassEmoji(result.winner.classe);
     const loserEmoji = getClassEmoji(result.loser.classe);
