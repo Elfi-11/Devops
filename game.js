@@ -97,6 +97,11 @@ async function processAttack(attacker, defender, player) {
     // Execute the attack and store result
     attacker.attack(defender);
     
+    // S'assurer que les HP ne sont pas négatifs
+    if (defender.hp < 0) {
+        defender.hp = 0;
+    }
+    
     // Calculer les dégâts infligés
     const damage = oldHp - defender.hp;
     
