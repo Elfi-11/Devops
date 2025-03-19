@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { AudioService } from './audioService.js';
 
 // Constantes pour les couleurs des équipes
 const TEAM1_COLOR = chalk.blue;
@@ -134,6 +135,13 @@ async function animateImpact(color, damage) {
 export function endGame(result) {
     console.clear();
     console.log(chalk.bold.yellow(`\n🏆 === FIN DU COMBAT === 🏆`));
+    
+    try {
+        // Jouer la musique de victoire
+        AudioService.play('victory.mp3');
+    } catch (error) {
+        // Ignorer silencieusement les erreurs audio
+    }
     
     const winnerEmoji = getClassEmoji(result.winner.classe);
     const loserEmoji = getClassEmoji(result.loser.classe);
