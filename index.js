@@ -35,12 +35,14 @@ async function mainMenu() {
         
         endGame(result);
         
-        console.log(chalk.cyan('\nAppuyez sur Entrée pour continuer...'));
-        await new Promise(resolve => process.stdin.once('data', resolve));
+        console.log(chalk.cyan('\nRetour au menu principal dans 3 secondes...'));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         
         return mainMenu();
       } catch (error) {
         console.error(chalk.red('❌ Erreur lors du combat:', error.message));
+        console.log(chalk.cyan('\nRetour au menu principal dans 3 secondes...'));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         return mainMenu();
       }
     case 'quit':
