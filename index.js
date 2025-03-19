@@ -24,6 +24,7 @@ async function mainMenu() {
   switch (answer) {
     case 'start_battle':
       console.log('Préparation du combat...');
+      await createTeams();
       try {
         const { player, enemy } = await createLobby();
         
