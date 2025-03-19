@@ -5,6 +5,9 @@ const { Line } = CLI;
 
 
 export async function startGame(teams) {
+    // const playerDisplay = `${getClassEmoji(player.classe)} ${TEAM1_COLOR(player.name)} (${player.classe})`;
+    // const enemyDisplay = `${getClassEmoji(enemy.classe)} ${TEAM2_COLOR(enemy.name)} (${enemy.classe})`;
+    // console.log(chalk.bold(`${playerDisplay} ${chalk.yellow('VS')} ${enemyDisplay}`));
 
     const team1 = teams[0];
     const team2 = teams[1];
@@ -18,12 +21,36 @@ export async function startGame(teams) {
     return await gameLoop(teams);
 }
 
-async function gameLoop(teams) {
+function drawBattleScreen(player, enemy) {
+    console.clear();
+    
+    // Titre du combat
+    console.log(chalk.bold.yellow(`\n⚔️ === COMBAT EN COURS === ⚔️\n`));
+    
+    // Afficher les équipes avec leurs couleurs respectives
+    const playerName = `${getClassEmoji(player.classe)} ${player.name} (${player.classe})`;
+    const enemyName = `${enemy.name} (${enemy.classe}) ${getClassEmoji(enemy.classe)}`;
+    
+    console.log(`${TEAM1_COLOR(playerName.padEnd(35))}${chalk.yellow('VS')}${TEAM2_COLOR(enemyName.padStart(35))}`);
+    
+    // Barres de santé
+    const playerHealthBar = getHealthBar(player.hp, player.maxHp, 20);
+    const enemyHealthBar = getHealthBar(enemy.hp, enemy.maxHp, 20);
+    
+    console.log(`${TEAM1_COLOR(`❤️ ${player.hp}/${player.maxHp} `)}${playerHealthBar}${' '.repeat(10)}${enemyHealthBar}${TEAM2_COLOR(` ${enemy.hp}/${enemy.maxHp} ❤️`)}`);
+    
+    console.log(chalk.yellow(`\n${'='.repeat(80)}\n`));
+}
+
+async function gameLoop(player, enemy) {
+    // Constantes pour les couleurs des équipes
+    const TEAM1_COLOR = chalk.blue;
+    const TEAM2_COLOR = chalk.red;
+
     let round = 1;
     
-    // Déterminer qui attaque en premier en fonction de la vitesse
-    let firstAttacker = player.speed >= enemy.speed ? player : enemy;
-    let secondAttacker = firstAttacker === player ? enemy : player;
+    // Ordonner les personnages par vitesse d'attaque
+    
     
     while (player.isAlive && enemy.isAlive) {
         console.log(chalk.cyan(`\n🔄 --- Round ${round} --- 🔄`));
@@ -34,7 +61,7 @@ async function gameLoop(teams) {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         // Premier attaquant
-        await processAttack(firstAttacker, secondAttacker);
+        await processAttack(firstAttacker, secondAttacker, player);
         
         // Vérifier si le second attaquant est toujours en vie
         if (!secondAttacker.isAlive) {
@@ -45,7 +72,7 @@ async function gameLoop(teams) {
         await new Promise(resolve => setTimeout(resolve, 500));
         
         // Second attaquant
-        await processAttack(secondAttacker, firstAttacker);
+        await processAttack(secondAttacker, firstAttacker, player);
         
         // Vérifier si le premier attaquant est toujours en vie
         if (!firstAttacker.isAlive) {
@@ -53,22 +80,27 @@ async function gameLoop(teams) {
         }
         
         round++;
+        
+        // Redessiner l'écran de combat à la fin du round
+        drawBattleScreen(player, enemy);
     }
 }
 
-async function processAttack(attacker, defender) {
+async function processAttack(attacker, defender, player) {
     const oldHp = defender.hp;
-    const isPlayer = attacker === global.player;
-    const attackerColor = isPlayer ? chalk.green : chalk.red;
-    const defenderColor = isPlayer ? chalk.red : chalk.green;
+    const isPlayerTeam = attacker === player;
+    const attackerColor = isPlayerTeam ? TEAM1_COLOR : TEAM2_COLOR;
+    const defenderColor = isPlayerTeam ? TEAM2_COLOR : TEAM1_COLOR;
     
     console.log(`${attackerColor(`${getClassEmoji(attacker.classe)} ${attacker.name}`)} ${chalk.yellow('⚔️ attaque!')} `);
     
+    // Execute the attack and store result
     attacker.attack(defender);
     
+    // Calculer les dégâts infligés
     const damage = oldHp - defender.hp;
-    console.log(`${chalk.bold(damage > 0 ? `💥 Dégâts: ${damage}` : '❌ Esquivé!')} `);
     
+    // Display HP after attack
     const hpPercentage = (defender.hp / defender.maxHp) * 100;
     let hpColor = chalk.green;
     if (hpPercentage < 30) hpColor = chalk.red;
@@ -76,18 +108,36 @@ async function processAttack(attacker, defender) {
     
     console.log(`${defenderColor(`${getClassEmoji(defender.classe)} ${defender.name}:`)} ${hpColor(`❤️ ${defender.hp}/${defender.maxHp} PV`)} ${getHealthBar(defender.hp, defender.maxHp)}`);
     
+    // Petite animation d'impact si des dégâts sont infligés
+    if (damage > 0) {
+        await animateImpact(defenderColor, damage);
+    }
+    
     // Petite pause pour l'immersion
     await new Promise(resolve => setTimeout(resolve, 300));
 }
 
+async function animateImpact(color, damage) {
+    const impactFrames = ['💥', '✨', '💫', '⚡'];
+    for (const frame of impactFrames) {
+        process.stdout.write(`\r${color(`${frame} -${damage} PV ${frame}`)}`);
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    console.log('\n');
+}
+
 export function endGame(result) {
+    console.clear();
     console.log(chalk.bold.yellow(`\n🏆 === FIN DU COMBAT === 🏆`));
     
     const winnerEmoji = getClassEmoji(result.winner.classe);
     const loserEmoji = getClassEmoji(result.loser.classe);
     
-    console.log(`\n${chalk.bold.green(`${winnerEmoji} ${result.winner.name} remporte la victoire! 🎉`)}`);
-    console.log(`${chalk.red(`${loserEmoji} ${result.loser.name} a été vaincu... 💀`)}\n`);
+    const winnerColor = result.winner === global.player ? TEAM1_COLOR : TEAM2_COLOR;
+    const loserColor = result.loser === global.player ? TEAM1_COLOR : TEAM2_COLOR;
+    
+    console.log(`\n${winnerColor(`${winnerEmoji} ${result.winner.name} remporte la victoire! 🎉`)}`);
+    console.log(`${loserColor(`${loserEmoji} ${result.loser.name} a été vaincu... 💀`)}\n`);
     
     return result;
 }
