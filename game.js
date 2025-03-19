@@ -97,6 +97,9 @@ async function processAttack(attacker, defender, player) {
     // Execute the attack and store result
     attacker.attack(defender);
     
+    // Calculer les dégâts infligés
+    const damage = oldHp - defender.hp;
+    
     // Display HP after attack
     const hpPercentage = (defender.hp / defender.maxHp) * 100;
     let hpColor = chalk.green;
