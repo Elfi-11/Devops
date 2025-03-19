@@ -94,11 +94,10 @@ async function processAttack(attacker, defender, player) {
     
     console.log(`${attackerColor(`${getClassEmoji(attacker.classe)} ${attacker.name}`)} ${chalk.yellow('⚔️ attaque!')} `);
     
+    // Execute the attack and store result
     attacker.attack(defender);
     
-    const damage = oldHp - defender.hp;
-    console.log(`${chalk.bold(damage > 0 ? `💥 Dégâts: ${damage}` : '❌ Esquivé!')} `);
-    
+    // Display HP after attack
     const hpPercentage = (defender.hp / defender.maxHp) * 100;
     let hpColor = chalk.green;
     if (hpPercentage < 30) hpColor = chalk.red;
