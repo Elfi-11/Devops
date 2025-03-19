@@ -12,21 +12,21 @@ export class Character {
     
     attack(target) {
         const diceValue = Math.floor(Math.random() * 20) + 1;
-        console.log(`Résultat du dé : ${diceValue}`);
+        console.log(`Dé résultat du D20: ${diceValue}`);
         switch (diceValue) {
             case 1:
-                console.log(chalk.red(`${this.name} se blesse lui-même !`));
+                console.log(chalk.red(`${this.name} se blesse lui-même ! 💥 (Échec critique)`));
                 this.hp -= this.damage;
                 break;
             case 2:
-                console.log(chalk.green(`${this.name} rate le coup porté à ${target.name} !`));
+                console.log(chalk.green(`${this.name} rate le coup porté à ${target.name} ! 💨`));
                 break;
             case 19:
                 console.log(chalk.yellow(`${this.name} attaque ${target.name} et inflige ${this.damage} points de dégâts !`));
                 target.hp -= this.damage;
                 break;
             case 20:
-                console.log(chalk.green(`${this.name} inflige un coup critique à ${target.name} !`));
+                console.log(chalk.green(`${this.name} inflige un coup critique à ${target.name} ! ⚡ (Coup critique)`));
                 target.hp -= this.damage * 2;
                 break;
             default:

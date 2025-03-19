@@ -32,12 +32,9 @@ async function mainMenu() {
         const { player, enemy } = await createLobby();
         
         const result = await startGame(player, enemy);
+        await endGame(result);  // Ajout de 'await' pour attendre la fin de l'animation
         
-        endGame(result);
-        
-        console.log(chalk.cyan('\nRetour au menu principal dans 3 secondes...'));
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        
+        // Pas besoin d'attendre 3 secondes supplémentaires ici puisque endGame a déjà une pause
         return mainMenu();
       } catch (error) {
         console.error(chalk.red('❌ Erreur lors du combat:', error.message));

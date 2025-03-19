@@ -79,6 +79,12 @@ async function gameLoop(player, enemy) {
             return { winner: secondAttacker, loser: firstAttacker };
         }
         
+        // Message de fin de round
+        console.log(chalk.cyan(`\n✅ Fin du round ${round} - Appuyez sur une touche pour continuer manuellement...`));
+        
+        // Pause plus longue à la fin du round pour lire ce qui s'est passé
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
         round++;
         
         // Redessiner l'écran de combat à la fin du round
@@ -131,9 +137,21 @@ async function animateImpact(color, damage) {
     console.log('\n');
 }
 
-export function endGame(result) {
+export async function endGame(result) {
     console.clear();
-    console.log(chalk.bold.yellow(`\n🏆 === FIN DU COMBAT === 🏆`));
+    
+    // Animation de victoire
+    const victoryFrames = ['🏆', '✨', '🎉', '⭐', '🏆'];
+    for (let i = 0; i < 3; i++) {  // Répéter l'animation 3 fois
+        for (const frame of victoryFrames) {
+            console.clear();
+            console.log(chalk.bold.yellow(`\n${frame} === FIN DU COMBAT === ${frame}\n`));
+            await new Promise(resolve => setTimeout(resolve, 150));
+        }
+    }
+    
+    console.clear();
+    console.log(chalk.bold.yellow(`\n🏆 === FIN DU COMBAT === 🏆\n`));
     
     const winnerEmoji = getClassEmoji(result.winner.classe);
     const loserEmoji = getClassEmoji(result.loser.classe);
@@ -141,8 +159,27 @@ export function endGame(result) {
     const winnerColor = result.winner === global.player ? TEAM1_COLOR : TEAM2_COLOR;
     const loserColor = result.loser === global.player ? TEAM1_COLOR : TEAM2_COLOR;
     
-    console.log(`\n${winnerColor(`${winnerEmoji} ${result.winner.name} remporte la victoire! 🎉`)}`);
-    console.log(`${loserColor(`${loserEmoji} ${result.loser.name} a été vaincu... 💀`)}\n`);
+    // Affichage du vainqueur avec effet spécial
+    console.log(chalk.bold(`\n${'-'.repeat(30)} VAINQUEUR ${'-'.repeat(30)}\n`));
+    console.log(winnerColor.bold(`     ${winnerEmoji} ${result.winner.name.toUpperCase()} (${result.winner.classe}) 🎖️`));
+    console.log(winnerColor(`     HP restants: ${result.winner.hp}/${result.winner.maxHp} ${getHealthBar(result.winner.hp, result.winner.maxHp)}`));
+    
+    // Remplacer chalk.rainbow par une alternance de couleurs
+    console.log('\n' + chalk.bold.green('🎊') + chalk.bold.yellow(' F') + chalk.bold.blue('É') + 
+        chalk.bold.red('L') + chalk.bold.magenta('I') + chalk.bold.cyan('C') + 
+        chalk.bold.green('I') + chalk.bold.yellow('T') + chalk.bold.blue('A') + 
+        chalk.bold.red('T') + chalk.bold.magenta('I') + chalk.bold.cyan('O') + 
+        chalk.bold.green('N') + chalk.bold.yellow('S') + chalk.bold.blue(' 🎊'));
+    
+    console.log(chalk.dim(`\n${'-'.repeat(30)} VAINCU ${'-'.repeat(32)}\n`));
+    console.log(loserColor(`     ${loserEmoji} ${result.loser.name} (${result.loser.classe}) 💀`));
+    
+    // Pause longue pour apprécier le résultat
+    console.log(chalk.cyan(`\nRetour au menu principal dans 7 secondes...`));
+    await new Promise(resolve => setTimeout(resolve, 7000));
+    
+    // Définir cette variable pour le prochain combat
+    global.player = undefined;
     
     return result;
 }
@@ -161,12 +198,12 @@ function getHealthBar(current, max, size = 20) {
 
 function getClassEmoji(classe) {
     switch (classe.toLowerCase()) {
-        case 'mage': return '🧙‍♂️';
-        case 'mage noir': return '🧙‍♀️';
-        case 'voleur': return '🥷';
-        case 'guerrier': return '⚔️';
-        case 'barbare': return '🪓';
-        case 'golem': return '🗿';
-        default: return '👤';
+        case 'mage': return ' 🧙‍♂️';
+        case 'mage noir': return ' 🧙‍♀️';
+        case 'voleur': return ' 🥷';
+        case 'guerrier': return ' ⚔️';
+        case 'barbare': return ' 🪓';
+        case 'golem': return ' 🗿';
+        default: return ' 👤';
     }
 }

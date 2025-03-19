@@ -7,7 +7,7 @@ export async function createLobby() {
     const playerCharacter = await select({
         message: 'Choisissez votre personnage:',
         choices: characterList.map(char => ({
-            name: `${char.name} (${char.classe}) - HP: ${char.maxHp}, ATK: ${char.damage}, VIT: ${char.speed}`,
+            name: `${char.name.padEnd(10)} | ${char.classe.padEnd(12)} | HP: ${String(char.maxHp).padEnd(4)} | ATK: ${String(char.damage).padEnd(3)} | VIT: ${char.speed}`,
             value: char
         }))
     });
@@ -16,7 +16,7 @@ export async function createLobby() {
     const enemyCharacter = await select({
         message: 'Choisissez votre adversaire:',
         choices: enemyChoices.map(char => ({
-            name: `${char.name} (${char.classe}) - HP: ${char.maxHp}, ATK: ${char.damage}, VIT: ${char.speed}`,
+            name: `${char.name.padEnd(10)} | ${char.classe.padEnd(12)} | HP: ${String(char.maxHp).padEnd(4)} | ATK: ${String(char.damage).padEnd(3)} | VIT: ${char.speed}`,
             value: char
         }))
     });
