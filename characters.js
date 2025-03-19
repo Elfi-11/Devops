@@ -10,6 +10,25 @@ export class Character {
         this.init();
     };
     
+    attackText(target, damage) {
+        if(this.classe === "Mage") {
+            console.log(chalk.yellow(`${this.name} lance une boule de feu sur ${target.name} et inflige ${damage} points de dégâts !`));
+        } else if(this.classe === "Mage noir") {
+            console.log(chalk.yellow(`${this.name} lance une boule de ténèbres sur ${target.name} et inflige ${damage} points de dégâts !`));
+        }
+        else if(this.classe === "Voleur") {
+            console.log(chalk.yellow(`${this.name} attaque ${target.name} par derrière et inflige ${damage} points de dégâts !`));
+        }
+        else if(this.classe === "Guerrier") {
+            console.log(chalk.yellow(`${this.name} attaque ${target.name} avec son épée et inflige ${damage} points de dégâts !`));
+        }
+        else if(this.classe === "Barbare") {
+            console.log(chalk.yellow(`${this.name} attaque ${target.name} avec sa hache et inflige ${damage} points de dégâts !`));
+        }
+        else if(this.classe === "Golem") {
+            console.log(chalk.yellow(`${this.name} attaque ${target.name} avec son poing et inflige ${damage} points de dégâts !`));
+        }
+    };
     attack(target) {
         const diceValue = Math.floor(Math.random() * 20) + 1;
         console.log(`Résultat du dé 20 : ${diceValue}`);
@@ -22,7 +41,7 @@ export class Character {
                 console.log(chalk.green(`${this.name} rate le coup porté à ${target.name} ! 💨`));
                 break;
             case 19:
-                console.log(chalk.yellow(`${this.name} attaque ${target.name} et inflige ${this.damage} points de dégâts !`));
+                this.attackText(target, this.damage)
                 target.hp -= this.damage;
                 break;
             case 20:
@@ -31,7 +50,7 @@ export class Character {
                 break;
             default:
                 const damagePerDiceFace = this.damage / 20;
-                console.log(chalk.yellow(`${this.name} attaque ${target.name} et inflige ${Math.floor(damagePerDiceFace * diceValue)} points de dégâts !`));
+                this.attackText(target, Math.floor(damagePerDiceFace * diceValue));
                 target.hp -= Math.floor(damagePerDiceFace * diceValue);
                 break;
         }
