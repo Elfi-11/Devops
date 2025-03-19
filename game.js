@@ -56,18 +56,15 @@ async function gameLoop(player, enemy) {
 }
 
 async function processAttack(attacker, defender) {
-    const oldHp = defender.hp;
-    const isPlayer = attacker === global.player;
-    const attackerColor = isPlayer ? chalk.green : chalk.red;
-    const defenderColor = isPlayer ? chalk.red : chalk.green;
-    
+    const attackerColor = attacker.classe === 'Mage' ? chalk.blue : chalk.green; // Example color logic
+    const defenderColor = defender.classe === 'Mage' ? chalk.blue : chalk.green; // Example color logic
+
     console.log(`${attackerColor(`${getClassEmoji(attacker.classe)} ${attacker.name}`)} ${chalk.yellow('⚔️ attaque!')} `);
     
+    // Execute the attack and store result
     attacker.attack(defender);
     
-    const damage = oldHp - defender.hp;
-    console.log(`${chalk.bold(damage > 0 ? `💥 Dégâts: ${damage}` : '❌ Esquivé!')} `);
-    
+    // Display HP after attack
     const hpPercentage = (defender.hp / defender.maxHp) * 100;
     let hpColor = chalk.green;
     if (hpPercentage < 30) hpColor = chalk.red;

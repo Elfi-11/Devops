@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 export class Character {
     constructor(name, classe, maxHp, damage, speed) {
         this.name = name;
@@ -9,7 +11,30 @@ export class Character {
     };
     
     attack(target) {
-        target.hp -= Math.floor(Math.random() * this.damage);
+        const diceValue = Math.floor(Math.random() * 20) + 1;
+        console.log(`Résultat du dé : ${diceValue}`);
+        switch (diceValue) {
+            case 1:
+                console.log(chalk.red(`${this.name} se blesse lui-même !`));
+                this.hp -= this.damage;
+                break;
+            case 2:
+                console.log(chalk.green(`${this.name} rate le coup porté à ${target.name} !`));
+                break;
+            case 19:
+                console.log(chalk.yellow(`${this.name} attaque ${target.name} et inflige ${this.damage} points de dégâts !`));
+                target.hp -= this.damage;
+                break;
+            case 20:
+                console.log(chalk.green(`${this.name} inflige un coup critique à ${target.name} !`));
+                target.hp -= this.damage * 2;
+                break;
+            default:
+                const damagePerDiceFace = this.damage / 20;
+                console.log(chalk.yellow(`${this.name} attaque ${target.name} et inflige ${Math.floor(damagePerDiceFace * diceValue)} points de dégâts !`));
+                target.hp -= Math.floor(damagePerDiceFace * diceValue);
+                break;
+        }
     };
     
     init(){
