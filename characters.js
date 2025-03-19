@@ -12,7 +12,7 @@ export class Character {
     
     attack(target) {
         const diceValue = Math.floor(Math.random() * 20) + 1;
-        console.log(`Résultat du dé : ${diceValue}`);
+        console.log(`Résultat du dé 20 : ${diceValue}`);
         switch (diceValue) {
             case 1:
                 console.log(chalk.red(`${this.name} se blesse lui-même !`));
@@ -47,10 +47,10 @@ export class Character {
 }
 
 export const characterList = [
-    new Character("Mathys", "Mage", 100, 10, 10),
-    new Character("Rémi", "Mage noir", 100, 10, 15),
-    new Character("Micael", "Voleur", 100, 10, 5),
-    new Character("Romain", "Guerrier", 100, 10, 5),
-    new Character("Marina", "Barbare", 100, 10, 5),
-    new Character("François", "Golem", 100, 10, 5),
+    new Character("Mathys", "Mage", 60, 8, 10),
+    new Character("Rémi", "Mage noir", 60, 13, 8),
+    new Character("Micael", "Voleur", 50, 15, 20),
+    new Character("Romain", "Guerrier", 150, 9, 10),
+    new Character("Marina", "Barbare", 100, 15, 12),
+    new Character("François", "Golem", 300, 4, 1),
 ];
