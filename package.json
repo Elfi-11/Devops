@@ -24,6 +24,7 @@
   "homepage": "https://github.com/Elfi-11/Devops#readme",
   "dependencies": {
     "@inquirer/prompts": "^7.4.0",
-    "chalk": "^4.1.2"
+    "chalk": "^4.1.2",
+    "clui": "^0.3.6"
   }
 }
