@@ -118,8 +118,8 @@ function drawBattleScreen(player, enemy) {
     const enemyDamage = enemy.getDamage();
     const enemySpeed = enemy.getSpeed();
     
-    console.log(`${TEAM1_COLOR(` 🗡️  ${playerDamage} `)}${' '.repeat(35)}${TEAM2_COLOR(` ${enemyDamage}  🗡️  `)}`);
-    console.log(`${TEAM1_COLOR(` 👟  ${playerSpeed} `)}${' '.repeat(35)}${TEAM2_COLOR(` ${enemySpeed}  👟  `)}`);
+    console.log(`${TEAM1_COLOR(` 🗡️  ${playerDamage} `)}${' '.repeat(39)}${TEAM2_COLOR(` ${enemyDamage}  🗡️  `)}`);
+    console.log(`${TEAM1_COLOR(` 👟  ${playerSpeed} `)}${' '.repeat(38)}${TEAM2_COLOR(` ${enemySpeed}  👟  `)}`);
     
     console.log(chalk.yellow(`\n${'='.repeat(80)}\n`));
 }
