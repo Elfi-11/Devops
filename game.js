@@ -19,12 +19,12 @@ export async function startGame(teams) {
     console.log(chalk.bold.yellow(`\n ⚔️  === DÉBUT DU COMBAT ===  ⚔️ \n`));
     
     // Offrir l'option d'équiper les deux personnages
-    for (const character of team1) {
-        await equipCharacter(character, chalk.green);
-    }
-    for (const character of team2) {
-        await equipCharacter(character, chalk.red);
-    }
+    // for (const character of team1) {
+    //     await equipCharacter(character, chalk.green);
+    // }
+    // for (const character of team2) {
+    //     await equipCharacter(character, chalk.red);
+    // }
     // const playerDisplay = `${getClassEmoji(player.classe)} ${TEAM1_COLOR(player.name)} (${player.classe})`;
     // const enemyDisplay = `${getClassEmoji(enemy.classe)} ${TEAM2_COLOR(enemy.name)} (${enemy.classe})`;
     
@@ -138,13 +138,13 @@ async function gameLoop(team1, team2) {
     let round = 1;
 
     team1 = team1.map((character, index) => {
-        const characterObj = new Character(character.name, character.class, character.maxHp, character.damage, character.speed, character.type);
+        const characterObj = new Character(character.name, character.classe, character.maxHp, character.damage, character.speed, character.type);
         characterObj.indexes = [0, index];
         return characterObj;
     })
     
     team2 = team2.map((character, index) => {
-        const characterObj = new Character(character.name, character.class, character.maxHp, character.damage, character.speed, character.type);
+        const characterObj = new Character(character.name, character.classe, character.maxHp, character.damage, character.speed, character.type);
         characterObj.indexes = [1, index];
         return characterObj;
     })
@@ -166,8 +166,6 @@ async function gameLoop(team1, team2) {
 
             return speedB - speedA;
         }); 
-
-        console.table(contenders);
 
         while(contenders.length > 0) {
     
@@ -196,7 +194,7 @@ async function gameLoop(team1, team2) {
                         .sort((a, b) => { return a.hp - b.hp})
                         .map(character => new Character(character.name, character.class, character.maxHp, character.damage, character.speed, character.type));
                     if (playersToHeal && attacker.type == 'healer') {
-                        attacker.Heal(playersToHeal[0]);
+                        // attacker.Heal(playersToHeal[0]);
                     } else {
                         attacker.attack(opponent);
                     }
@@ -207,14 +205,14 @@ async function gameLoop(team1, team2) {
                         .sort((a, b) => { return a.hp - b.hp})
                         .map(character => new Character(character.name, character.class, character.maxHp, character.damage, character.speed, character.type));
                     if (playersToHeal && attacker.type == 'healer') {
-                        attacker.Heal(playersToHeal[0]);
+                        // attacker.Heal(playersToHeal[0]);
                     } else {
                         attacker.attack(opponent);
                     }
                 }
 
                 displayGameState(team1, team2);
-                // drawBattleScreen(player, opponent);
+                drawBattleScreen(player, opponent);
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
@@ -380,7 +378,7 @@ function getClassEmoji(classe) {
 
 function displayGameState(team1, team2) {
     var totalLines;
-    console.clear();
+    // console.clear();
 
     if (team1.length > team2.length) {
         totalLines = team1.length
