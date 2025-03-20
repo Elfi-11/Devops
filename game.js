@@ -225,7 +225,7 @@ export async function endGame(result) {
         }
     }
     
-    // console.clear();
+    console.clear();
     console.log(chalk.bold.yellow(`\n 🏆  === FIN DU COMBAT ===  🏆 \n`));
     
     const winnerEmoji = getClassEmoji(result.winner.classe);
