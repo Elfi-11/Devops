@@ -5,7 +5,7 @@ const TEAM1_COLOR = chalk.blue;
 const TEAM2_COLOR = chalk.red;
 
 export async function startGame(player, enemy) {
-    console.clear();
+    // console.clear();
     console.log(chalk.bold.yellow(`\n ⚔️  === DÉBUT DU COMBAT ===  ⚔️ \n`));
     
     const playerDisplay = `${getClassEmoji(player.classe)} ${TEAM1_COLOR(player.name)} (${player.classe})`;
@@ -27,7 +27,7 @@ export async function startGame(player, enemy) {
 }
 
 function drawBattleScreen(player, enemy) {
-    console.clear();
+    // console.clear();
     
     // Titre du combat
     console.log(chalk.bold.yellow(`\n ⚔️  === COMBAT EN COURS ===  ⚔️ \n`));
@@ -144,13 +144,13 @@ export async function endGame(result) {
     const victoryFrames = [' 🏆 ', ' ✨ ', ' 🎉 ', ' ⭐ ', ' 🏆 '];
     for (let i = 0; i < 3; i++) {  // Répéter l'animation 3 fois
         for (const frame of victoryFrames) {
-            console.clear();
+            // console.clear();
             console.log(chalk.bold.yellow(`\n${frame} === FIN DU COMBAT === ${frame}\n`));
             await new Promise(resolve => setTimeout(resolve, 150));
         }
     }
     
-    console.clear();
+    // console.clear();
     console.log(chalk.bold.yellow(`\n 🏆  === FIN DU COMBAT ===  🏆 \n`));
     
     const winnerEmoji = getClassEmoji(result.winner.classe);

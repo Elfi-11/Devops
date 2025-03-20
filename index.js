@@ -6,7 +6,7 @@ import chalk from 'chalk';
 
 async function mainMenu(clearConsole = true) {
   if (clearConsole) {
-    console.clear();
+    // console.clear();
     console.log(chalk.bold.magenta('\n🎮 === RPG FANTASY === 🎮\n'));
   } else {
     console.log(chalk.bold.magenta('\n🎮 === RPG FANTASY === 🎮\n'));
