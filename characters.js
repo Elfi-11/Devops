@@ -1,12 +1,13 @@
 import chalk from 'chalk';
 
 export class Character {
-    constructor(name, classe, maxHp, damage, speed) {
+    constructor(name, classe, maxHp, damage, speed, type) {
         this.name = name;
         this.classe = classe;
         this.maxHp = maxHp;
         this.damage = damage;
         this.speed = speed;
+        this.type = type;
         this.init();
     };
     
@@ -27,6 +28,8 @@ export class Character {
         }
         else if(this.classe === "Golem") {
             console.log(chalk.yellow(`${this.name} attaque ${target.name} avec son poing et inflige ${damage} points de dégâts !`));
+        }else{
+            console.log(chalk.yellow(`${this.name} attaque ${target.name} inflige ${damage} points de dégâts !`));
         }
     };
     takeDamage(damage){
@@ -61,6 +64,33 @@ export class Character {
                 break;
         }
     };
+
+    Heal(target) {
+        const diceValue = Math.floor(Math.random() * 20) + 1;
+        console.log(`Résultat du dé 20 : ${diceValue}`);
+        switch (diceValue) {
+            case 1:
+                console.log(chalk.red(`${this.name} se blesse son allié ! 💥 (Échec critique)`));
+                target.takeDamage(this.damage);
+                break;
+            case 2:
+                console.log(chalk.green(`${this.name} n'arrive pas a soigné ${target.name} ! 💨`));
+                break;
+            case 19:
+                this.attackText(target, this.damage)
+                target.takeDamage(-this.damage);
+                break;
+            case 20:
+                console.log(chalk.green(`${this.name} inflige un coup critique à ${target.name} ! ⚡ (Coup critique)`));
+                target.takeDamage(this.damage * -2);
+                break;
+            default:
+                const damagePerDiceFace = this.damage / 20;
+                this.attackText(target, Math.floor(-damagePerDiceFace * diceValue));
+                target.takeDamage(Math.floor(damagePerDiceFace * diceValue));
+                break;
+        }
+    };
     
     init(){
         this.hp = this.maxHp;
@@ -72,10 +102,10 @@ export class Character {
 }
 
 export const characterList = [
-    new Character("Mathys", "Mage", 60, 8, 10),
-    new Character("Rémi", "Mage noir", 60, 13, 8),
-    new Character("Micael", "Voleur", 50, 15, 20),
-    new Character("Romain", "Guerrier", 150, 9, 10),
-    new Character("Marina", "Barbare", 100, 15, 12),
-    new Character("François", "Golem", 300, 4, 1),
+    new Character("Mathys", "Mage", 60, 8, 10, "dps"),
+    new Character("Rémi", "Mage noir", 60, 13, 8,"dps"),
+    new Character("Micael", "Voleur", 50, 15, 20, "dps"),
+    new Character("Romain", "Guerrier", 150, 9, 10, "dps"),
+    new Character("Marina", "Prêtre", 30, 10, 12, "healer"),
+    new Character("François", "Golem", 300, 4, 1, "dps"),
 ];
