@@ -70,23 +70,23 @@ export class Character {
         console.log(`Résultat du dé 20 : ${diceValue}`);
         switch (diceValue) {
             case 1:
-                console.log(chalk.red(`${this.name} se blesse son allié ! 💥 (Échec critique)`));
+                console.log(chalk.red(`${this.name} blesse son allié ! 💥 (Échec critique)`));
                 target.takeDamage(this.damage);
                 break;
             case 2:
                 console.log(chalk.green(`${this.name} n'arrive pas a soigné ${target.name} ! 💨`));
                 break;
             case 19:
-                this.attackText(target, this.damage)
+                console.log(chalk.red(`${this.name} Soigne son allié pour ${this.damage} PV`));
                 target.takeDamage(-this.damage);
                 break;
             case 20:
-                console.log(chalk.green(`${this.name} inflige un coup critique à ${target.name} ! ⚡ (Coup critique)`));
+                console.log(chalk.green(`${this.name} soigne très fort ${target.name} ! ⚡ (Coup critique)`));
                 target.takeDamage(this.damage * -2);
                 break;
             default:
                 const damagePerDiceFace = this.damage / 20;
-                this.attackText(target, Math.floor(-damagePerDiceFace * diceValue));
+                console.log(chalk.red(`${this.name} Soigne son allié pour ${this.damage} PV`));
                 target.takeDamage(Math.floor(damagePerDiceFace * diceValue));
                 break;
         }
