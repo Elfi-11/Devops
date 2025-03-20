@@ -189,24 +189,28 @@ async function gameLoop(team1, team2) {
 
                 
                 if(player.indexes[0] == 0) {
-                    var opponent = team2[generateRandomBetween(0, team2.length)];
-                    const playersToHeal = team1.filter(character => character.hp < character.maxHp)
-                        .sort((a, b) => { return a.hp - b.hp})
-                        .map(character => new Character(character.name, character.class, character.maxHp, character.damage, character.speed, character.type));
-                    if (playersToHeal && attacker.type == 'healer') {
-                        // attacker.Heal(playersToHeal[0]);
+                    // Pour l'équipe 1
+                    const playersToHeal = team1.filter(character => character.hp < character.getMaxHp() && character.hp > 0)
+                        .sort((a, b) => { return a.hp - b.hp});
+                    
+                    if (playersToHeal.length > 0 && attacker.type == 'healer') {
+                        console.log(chalk.green(` 💊  ${attacker.name} tente de soigner ${playersToHeal[0].name} `));
+                        attacker.Heal(playersToHeal[0]);
                     } else {
+                        var opponent = team2[generateRandomBetween(0, team2.length-1)];
                         attacker.attack(opponent);
                     }
                 }
                 if(player.indexes[0] == 1) {
-                    var opponent = team1[generateRandomBetween(0, team1.length)];
-                    const playersToHeal = team1.filter(character => character.hp < character.maxHp)
-                        .sort((a, b) => { return a.hp - b.hp})
-                        .map(character => new Character(character.name, character.class, character.maxHp, character.damage, character.speed, character.type));
-                    if (playersToHeal && attacker.type == 'healer') {
-                        // attacker.Heal(playersToHeal[0]);
+                    // Pour l'équipe 2 - CORRECTION: utiliser team2 au lieu de team1
+                    const playersToHeal = team2.filter(character => character.hp < character.getMaxHp() && character.hp > 0)
+                        .sort((a, b) => { return a.hp - b.hp});
+                    
+                    if (playersToHeal.length > 0 && attacker.type == 'healer') {
+                        console.log(chalk.red(` 💊  ${attacker.name} tente de soigner ${playersToHeal[0].name} `));
+                        attacker.Heal(playersToHeal[0]);
                     } else {
+                        var opponent = team1[generateRandomBetween(0, team1.length-1)];
                         attacker.attack(opponent);
                     }
                 }
