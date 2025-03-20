@@ -144,7 +144,7 @@ export async function endGame(result) {
     const victoryFrames = [' 🏆 ', ' ✨ ', ' 🎉 ', ' ⭐ ', ' 🏆 '];
     for (let i = 0; i < 3; i++) {  // Répéter l'animation 3 fois
         for (const frame of victoryFrames) {
-            // console.clear();
+            console.clear();
             console.log(chalk.bold.yellow(`\n${frame} === FIN DU COMBAT === ${frame}\n`));
             await new Promise(resolve => setTimeout(resolve, 150));
         }
