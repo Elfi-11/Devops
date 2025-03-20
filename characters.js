@@ -34,7 +34,7 @@ export class Character {
         console.log(`Résultat du dé 20 : ${diceValue}`);
         switch (diceValue) {
             case 1:
-                console.log(chalk.red(`${this.name} se blesse lui-même ! 💥 (Échec critique)`));
+                console.log(chalk.orange(`${this.name} se blesse lui-même ! 💥 (Échec critique)`));
                 this.hp -= this.damage;
                 break;
             case 2:
@@ -45,7 +45,7 @@ export class Character {
                 target.hp -= this.damage;
                 break;
             case 20:
-                console.log(chalk.green(`${this.name} inflige un coup critique à ${target.name} ! ⚡ (Coup critique)`));
+                console.log(chalk.red(`${this.name} inflige un coup critique à ${target.name} ! ⚡ (Coup critique)`));
                 target.hp -= this.damage * 2;
                 break;
             default:
