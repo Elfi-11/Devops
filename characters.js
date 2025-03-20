@@ -37,6 +37,9 @@ export class Character {
         if(this.hp < 0){
             this.hp = 0;
         }
+        if(this.hp > this.maxHp){
+            this.hp = this.maxHp;
+        }
     }
     attack(target) {
         const diceValue = Math.floor(Math.random() * 20) + 1;
