@@ -7,6 +7,7 @@ export class Character {
         this.maxHp = maxHp;
         this.damage = damage;
         this.speed = speed;
+        this.equipment = null;
         this.init();
     };
     
@@ -29,27 +30,83 @@ export class Character {
             console.log(chalk.yellow(`${this.name} attaque ${target.name} avec son poing et inflige ${damage} points de dégâts !`));
         }
     };
+    
+    /**
+     * Equip an item to the character
+     * @param {Equipment} equipment - The equipment to use
+     */
+    equip(equipment) {
+        this.equipment = equipment;
+        console.log(chalk.blue(`${this.name} s'équipe de ${equipment.name} !`));
+    }
+    
+    /**
+     * Remove the equipped item
+     */
+    unequip() {
+        if (this.equipment) {
+            console.log(chalk.blue(`${this.name} retire ${this.equipment.name} !`));
+            this.equipment = null;
+        }
+    }
+    
+    /**
+     * Get the character's damage including equipment bonuses
+     */
+    getDamage() {
+        let total = this.damage;
+        if (this.equipment && this.equipment.stats.damage) {
+            total += this.equipment.stats.damage;
+        }
+        return total;
+    }
+    
+    /**
+     * Get the character's speed including equipment bonuses
+     */
+    getSpeed() {
+        let total = this.speed;
+        if (this.equipment && this.equipment.stats.speed) {
+            total += this.equipment.stats.speed;
+        }
+        return total;
+    }
+    
+    /**
+     * Get the character's max HP including equipment bonuses
+     */
+    getMaxHp() {
+        let total = this.maxHp;
+        if (this.equipment && this.equipment.stats.hp) {
+            total += this.equipment.stats.hp;
+        }
+        return total;
+    }
+    
     attack(target) {
         const diceValue = Math.floor(Math.random() * 20) + 1;
         console.log(`Résultat du dé 20 : ${diceValue}`);
+        // Use getDamage() to include equipment bonuses
+        const damageValue = this.getDamage();
+        
         switch (diceValue) {
             case 1:
                 console.log(chalk.red(`${this.name} se blesse lui-même ! 💥 (Échec critique)`));
-                this.hp -= this.damage;
+                this.hp -= damageValue;
                 break;
             case 2:
                 console.log(chalk.green(`${this.name} rate le coup porté à ${target.name} ! 💨`));
                 break;
             case 19:
-                this.attackText(target, this.damage)
-                target.hp -= this.damage;
+                this.attackText(target, damageValue)
+                target.hp -= damageValue;
                 break;
             case 20:
                 console.log(chalk.red(`${this.name} inflige un coup critique à ${target.name} ! ⚡ (Coup critique)`));
-                target.hp -= this.damage * 2;
+                target.hp -= damageValue * 2;
                 break;
             default:
-                const damagePerDiceFace = this.damage / 20;
+                const damagePerDiceFace = damageValue / 20;
                 this.attackText(target, Math.floor(damagePerDiceFace * diceValue));
                 target.hp -= Math.floor(damagePerDiceFace * diceValue);
                 break;
@@ -57,7 +114,7 @@ export class Character {
     };
     
     init(){
-        this.hp = this.maxHp;
+        this.hp = this.getMaxHp();
     }
     
     get isAlive(){

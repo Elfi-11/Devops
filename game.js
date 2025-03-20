@@ -1,4 +1,6 @@
 import chalk from 'chalk';
+import { getEquipment, equipmentList } from './equipment.js';
+import { select } from '@inquirer/prompts';
 
 // Constantes pour les couleurs des équipes
 const TEAM1_COLOR = chalk.blue;
@@ -8,12 +10,16 @@ export async function startGame(player, enemy) {
     // console.clear();
     console.log(chalk.bold.yellow(`\n ⚔️  === DÉBUT DU COMBAT ===  ⚔️ \n`));
     
+    // Offrir l'option d'équiper les deux personnages
+    await equipCharacter(player, TEAM1_COLOR);
+    await equipCharacter(enemy, TEAM2_COLOR);
+    
     const playerDisplay = `${getClassEmoji(player.classe)} ${TEAM1_COLOR(player.name)} (${player.classe})`;
     const enemyDisplay = `${getClassEmoji(enemy.classe)} ${TEAM2_COLOR(enemy.name)} (${enemy.classe})`;
     
     console.log(chalk.bold(`${playerDisplay} ${chalk.yellow(' VS ')} ${enemyDisplay}`));
     
-    // Réinitialiser les PV des personnages
+    // Réinitialiser les PV des personnages APRÈS l'équipement pour que les bonus s'appliquent
     player.init();
     enemy.init();
     
@@ -24,6 +30,63 @@ export async function startGame(player, enemy) {
     drawBattleScreen(player, enemy);
     
     return await gameLoop(player, enemy);
+}
+
+/**
+ * Permet au joueur de choisir un équipement
+ * @param {Character} character - Le personnage à équiper
+ * @param {Function} colorFunction - Fonction de couleur pour l'affichage (bleu pour joueur, rouge pour ennemi)
+ */
+async function equipCharacter(character, colorFunction) {
+    console.log(colorFunction(`\n🛡️  === ÉQUIPEMENT DE ${character.name.toUpperCase()} === 🛡️\n`));
+    
+    // Créer les choix d'équipement
+    const equipChoices = equipmentList.map(equip => {
+        const statsText = Object.entries(equip.stats)
+            .map(([stat, value]) => {
+                const prefix = value > 0 ? '+' : '';
+                const statDisplay = stat === 'hp' ? 'PV' : (stat === 'damage' ? 'ATK' : 'VIT');
+                return `${statDisplay}: ${prefix}${value}`;
+            })
+            .join(', ');
+            
+        return {
+            name: `${equip.name} (${statsText})`,
+            value: equip.name,
+            description: `Équiper ${equip.name}`
+        };
+    });
+    
+    // Ajouter l'option "Aucun équipement"
+    equipChoices.push({
+        name: "Aucun équipement",
+        value: "none",
+        description: "Combattre sans équipement"
+    });
+    
+    const selectedEquipName = await select({
+        message: colorFunction(`Choisissez un équipement pour ${character.name}:`),
+        choices: equipChoices
+    });
+    
+    if (selectedEquipName !== "none") {
+        const selectedEquip = getEquipment(selectedEquipName);
+        if (selectedEquip) {
+            character.equip(selectedEquip);
+            
+            // Afficher les bonus
+            console.log(chalk.green("\nBonus d'équipement:"));
+            Object.entries(selectedEquip.stats).forEach(([stat, value]) => {
+                const statName = stat === 'hp' ? 'PV' : (stat === 'damage' ? 'Dégâts' : 'Vitesse');
+                console.log(`${statName}: ${value > 0 ? '+' + value : value}`);
+            });
+            
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+    } else {
+        console.log(colorFunction(`\n${character.name} combattra sans équipement.`));
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
 }
 
 function drawBattleScreen(player, enemy) {
@@ -38,11 +101,25 @@ function drawBattleScreen(player, enemy) {
     
     console.log(`${TEAM1_COLOR(playerName.padEnd(35))}${chalk.yellow(' VS ')}${TEAM2_COLOR(enemyName.padStart(35))}`);
     
-    // Barres de santé
-    const playerHealthBar = getHealthBar(player.hp, player.maxHp, 20);
-    const enemyHealthBar = getHealthBar(enemy.hp, enemy.maxHp, 20);
+    // Afficher les équipements
+    let playerEquipText = player.equipment ? `[🛡️ ${player.equipment.name}]` : '';
+    let enemyEquipText = enemy.equipment ? `[🛡️ ${enemy.equipment.name}]` : '';
+    console.log(`${TEAM1_COLOR(playerEquipText.padEnd(35))}${' '.repeat(4)}${TEAM2_COLOR(enemyEquipText.padStart(35))}`);
     
-    console.log(`${TEAM1_COLOR(` ❤️  ${player.hp}/${player.maxHp} `)}${playerHealthBar}${' '.repeat(10)}${enemyHealthBar}${TEAM2_COLOR(` ${enemy.hp}/${enemy.maxHp}  ❤️  `)}`);
+    // Barres de santé
+    const playerHealthBar = getHealthBar(player.hp, player.getMaxHp(), 20);
+    const enemyHealthBar = getHealthBar(enemy.hp, enemy.getMaxHp(), 20);
+    
+    console.log(`${TEAM1_COLOR(` ❤️  ${player.hp}/${player.getMaxHp()} `)}${playerHealthBar}${' '.repeat(10)}${enemyHealthBar}${TEAM2_COLOR(` ${enemy.hp}/${enemy.getMaxHp()}  ❤️  `)}`);
+    
+    // Stats avec équipement
+    const playerDamage = player.getDamage();
+    const playerSpeed = player.getSpeed();
+    const enemyDamage = enemy.getDamage();
+    const enemySpeed = enemy.getSpeed();
+    
+    console.log(`${TEAM1_COLOR(` 🗡️  ${playerDamage} `)}${' '.repeat(35)}${TEAM2_COLOR(` ${enemyDamage}  🗡️  `)}`);
+    console.log(`${TEAM1_COLOR(` 👟  ${playerSpeed} `)}${' '.repeat(35)}${TEAM2_COLOR(` ${enemySpeed}  👟  `)}`);
     
     console.log(chalk.yellow(`\n${'='.repeat(80)}\n`));
 }
@@ -50,8 +127,8 @@ function drawBattleScreen(player, enemy) {
 async function gameLoop(player, enemy) {
     let round = 1;
     
-    // Déterminer qui attaque en premier en fonction de la vitesse
-    let firstAttacker = player.speed >= enemy.speed ? player : enemy;
+    // Déterminer qui attaque en premier en fonction de la vitesse (avec bonus d'équipement)
+    let firstAttacker = player.getSpeed() >= enemy.getSpeed() ? player : enemy;
     let secondAttacker = firstAttacker === player ? enemy : player;
     
     while (player.isAlive && enemy.isAlive) {
@@ -111,13 +188,13 @@ async function processAttack(attacker, defender, player) {
     // Calculer les dégâts infligés
     const damage = oldHp - defender.hp;
     
-    // Display HP after attack
-    const hpPercentage = (defender.hp / defender.maxHp) * 100;
+    // Afficher les HP après l'attaque en utilisant getMaxHp()
+    const hpPercentage = (defender.hp / defender.getMaxHp()) * 100;
     let hpColor = chalk.green;
     if (hpPercentage < 30) hpColor = chalk.red;
     else if (hpPercentage < 70) hpColor = chalk.yellow;
     
-    console.log(`${defenderColor(`${getClassEmoji(defender.classe)} ${defender.name}:`)} ${hpColor(` ❤️  ${defender.hp}/${defender.maxHp} PV `)} ${getHealthBar(defender.hp, defender.maxHp)}`);
+    console.log(`${defenderColor(`${getClassEmoji(defender.classe)} ${defender.name}:`)} ${hpColor(` ❤️  ${defender.hp}/${defender.getMaxHp()} PV `)} ${getHealthBar(defender.hp, defender.getMaxHp())}`);
     
     // Petite animation d'impact si des dégâts sont infligés
     if (damage > 0) {
@@ -162,7 +239,7 @@ export async function endGame(result) {
     // Affichage du vainqueur avec effet spécial
     console.log(chalk.bold(`\n${'-'.repeat(30)} VAINQUEUR ${'-'.repeat(30)}\n`));
     console.log(winnerColor.bold(`     ${winnerEmoji} ${result.winner.name.toUpperCase()} (${result.winner.classe})  🎖️  `));
-    console.log(winnerColor(`     HP restants: ${result.winner.hp}/${result.winner.maxHp} ${getHealthBar(result.winner.hp, result.winner.maxHp)}`));
+    console.log(winnerColor(`     HP restants: ${result.winner.hp}/${result.winner.getMaxHp()} ${getHealthBar(result.winner.hp, result.winner.getMaxHp())}`));
     
     // Remplacer chalk.rainbow par une alternance de couleurs
     console.log('\n' + chalk.bold.green(' 🎊 ') + chalk.bold.yellow(' F') + chalk.bold.blue('É') + 
