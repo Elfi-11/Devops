@@ -16,9 +16,9 @@ async function mainMenu(clearConsole = true) {
     message: chalk.cyan('🏰 Bienvenue dans le RPG !'),
     choices: [
       {
-        name: chalk.green('⚔️  Lancer un combat'),
+        name: chalk.green('⚔️ Démarrer une partie'),
         value: 'start_battle',
-        description: 'Lancer un combat entre deux personnages.',
+        description: 'Créez vos équipes et faites les s\'affronter.',
       },
       new Separator(),
       {
@@ -33,18 +33,20 @@ async function mainMenu(clearConsole = true) {
     case 'start_battle':
       console.log(chalk.yellow('\n🔥  Préparation du combat...  🔥'));
       try {
-        const { player, enemy } = await createLobby();
+        const teams = await createTeams();
         
-        const result = await startGame(player, enemy);
-        await endGame(result);
+        const result = await startGame(teams);
+        
+        // await endGame(result);
         
         // Appel de mainMenu avec false pour ne pas effacer la console
         return mainMenu(false);
       } catch (error) {
+        throw error;
         console.error(chalk.red('❌  Erreur lors du combat:', error.message));
         console.log(chalk.cyan('\nRetour au menu principal dans 3 secondes...'));
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        return mainMenu();
+        // await new Promise(resolve => setTimeout(resolve, 3000));
+        // return mainMenu();
       }
     case 'quit':
       console.log(chalk.magenta('\n👋  Au revoir ! À bientôt dans le monde fantastique.\n'));
