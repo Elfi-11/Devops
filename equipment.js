@@ -38,7 +38,7 @@ export function createEquipment(name, stats) {
  */
 export const equipmentList = [
     createEquipment("Épée légendaire", { damage: 5 }),
-    createEquipment("Bouclier du dragon", { speed: -2 }),
+    createEquipment("Bouclier du dragon", { defense: 3, speed: -2 }),
     createEquipment("Bottes de célérité", { speed: 5 }),
     createEquipment("Amulette de puissance", { damage: 3, speed: 2 }),
     createEquipment("Armure lourde", { hp: 70, speed: -2 }),

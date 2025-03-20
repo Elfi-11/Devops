@@ -45,7 +45,9 @@ async function equipCharacter(character, colorFunction) {
         const statsText = Object.entries(equip.stats)
             .map(([stat, value]) => {
                 const prefix = value > 0 ? '+' : '';
-                const statDisplay = stat === 'hp' ? 'PV' : (stat === 'damage' ? 'ATK' : 'VIT');
+                const statDisplay = stat === 'hp' ? 'PV' : 
+                                   (stat === 'damage' ? 'ATK' : 
+                                   (stat === 'defense' ? 'DEF' : 'VIT'));
                 return `${statDisplay}: ${prefix}${value}`;
             })
             .join(', ');
@@ -77,7 +79,9 @@ async function equipCharacter(character, colorFunction) {
             // Afficher les bonus
             console.log(chalk.green("\nBonus d'équipement:"));
             Object.entries(selectedEquip.stats).forEach(([stat, value]) => {
-                const statName = stat === 'hp' ? 'PV' : (stat === 'damage' ? 'Dégâts' : 'Vitesse');
+                const statName = stat === 'hp' ? 'PV' : 
+                               (stat === 'damage' ? 'Dégâts' : 
+                               (stat === 'defense' ? 'Défense' : 'Vitesse'));
                 console.log(`${statName}: ${value > 0 ? '+' + value : value}`);
             });
             
@@ -97,29 +101,46 @@ function drawBattleScreen(player, enemy) {
     
     // Afficher les équipes avec leurs couleurs respectives
     const playerName = `${getClassEmoji(player.classe)} ${player.name} (${player.classe})`;
-    const enemyName = `${enemy.name} (${enemy.classe}) ${getClassEmoji(enemy.classe)}`;
+    const enemyName = `${getClassEmoji(enemy.classe)} ${enemy.name} (${enemy.classe})`;
     
-    console.log(`${TEAM1_COLOR(playerName.padEnd(35))}${chalk.yellow(' VS ')}${TEAM2_COLOR(enemyName.padStart(35))}`);
+    const playerNameWidth = playerName.length;
+    const enemyNameWidth = enemyName.length;
+    const totalWidth = 80;
+    const spacerWidth = totalWidth - playerNameWidth - enemyNameWidth - 4; // 4 pour "VS"
     
-    // Afficher les équipements
-    let playerEquipText = player.equipment ? `[🛡️  ${player.equipment.name}]` : '';
-    let enemyEquipText = enemy.equipment ? `[🛡️  ${enemy.equipment.name}]` : '';
-    console.log(`${TEAM1_COLOR(playerEquipText.padEnd(35))}${' '.repeat(4)}${TEAM2_COLOR(enemyEquipText.padStart(35))}`);
+    console.log(`${TEAM1_COLOR(playerName)} ${chalk.yellow('VS')}${' '.repeat(spacerWidth)} ${TEAM2_COLOR(enemyName)}`);
     
-    // Barres de santé
-    const playerHealthBar = getHealthBar(player.hp, player.getMaxHp(), 20);
-    const enemyHealthBar = getHealthBar(enemy.hp, enemy.getMaxHp(), 20);
+    // Équipements - alignés à gauche pour les deux
+    const playerEquip = player.equipment ? `[🛡️ ${player.equipment.name}]` : '';
+    const enemyEquip = enemy.equipment ? `[🛡️ ${enemy.equipment.name}]` : '';
+    console.log(`${TEAM1_COLOR(playerEquip)}${' '.repeat(Math.max(totalWidth - playerEquip.length - enemyEquip.length, 5))} ${TEAM2_COLOR(enemyEquip)}`);
     
-    console.log(`${TEAM1_COLOR(` ❤️  ${player.hp}/${player.getMaxHp()} `)}${playerHealthBar}${' '.repeat(10)}${enemyHealthBar}${TEAM2_COLOR(` ${enemy.hp}/${enemy.getMaxHp()}  ❤️  `)}`);
+    // Points de vie avec pourcentage et barre alignés sur leur côté respectif
+    const playerHP = `❤️${player.hp}/${player.getMaxHp()}`;
+    const playerHealthBar = getHealthBar(player.hp, player.getMaxHp(), 10);
+    const playerPercent = `${Math.round((player.hp / player.getMaxHp()) * 100)}%`;
     
-    // Stats avec équipement
-    const playerDamage = player.getDamage();
-    const playerSpeed = player.getSpeed();
-    const enemyDamage = enemy.getDamage();
-    const enemySpeed = enemy.getSpeed();
+    const enemyHP = `❤️${enemy.hp}/${enemy.getMaxHp()}`;
+    const enemyHealthBar = getHealthBar(enemy.hp, enemy.getMaxHp(), 10);
+    const enemyPercent = `${Math.round((enemy.hp / enemy.getMaxHp()) * 100)}%`;
     
-    console.log(`${TEAM1_COLOR(` 🗡️  ${playerDamage} `)}${' '.repeat(39)}${TEAM2_COLOR(` ${enemyDamage}  🗡️  `)}`);
-    console.log(`${TEAM1_COLOR(` 👟  ${playerSpeed} `)}${' '.repeat(38)}${TEAM2_COLOR(` ${enemySpeed}  👟  `)}`);
+    // Afficher les barres de vie avec le format désiré
+    console.log(`${TEAM1_COLOR(playerHP)} ${TEAM1_COLOR(playerHealthBar)} ${TEAM1_COLOR(playerPercent)}${' '.repeat(Math.max(totalWidth - (playerHP.length + playerHealthBar.length + playerPercent.length + enemyHP.length + enemyHealthBar.length + enemyPercent.length), 5))} ${TEAM2_COLOR(enemyHP)} ${TEAM2_COLOR(enemyHealthBar)} ${TEAM2_COLOR(enemyPercent)}`);
+    
+    // Dégâts - alignés à gauche pour les deux
+    const playerDmg = `🗡️${player.getDamage()}`;
+    const enemyDmg = `🗡️${enemy.getDamage()}`;
+    console.log(`${TEAM1_COLOR(playerDmg)}${' '.repeat(Math.max(totalWidth - playerDmg.length - enemyDmg.length, 5))} ${TEAM2_COLOR(enemyDmg)}`);
+    
+    // Défense - alignés à gauche pour les deux
+    const playerDef = `🛡️${player.getDefense()}`;
+    const enemyDef = `🛡️${enemy.getDefense()}`;
+    console.log(`${TEAM1_COLOR(playerDef)}${' '.repeat(Math.max(totalWidth - playerDef.length - enemyDef.length, 5))} ${TEAM2_COLOR(enemyDef)}`);
+    
+    // Vitesse - alignés à gauche pour les deux
+    const playerSpeed = `👟${player.getSpeed()}`;
+    const enemySpeed = `👟${enemy.getSpeed()}`;
+    console.log(`${TEAM1_COLOR(playerSpeed)}${' '.repeat(Math.max(totalWidth - playerSpeed.length - enemySpeed.length, 5))} ${TEAM2_COLOR(enemySpeed)}`);
     
     console.log(chalk.yellow(`\n${'='.repeat(80)}\n`));
 }

@@ -87,7 +87,28 @@ export class Character {
         return total;
     }
     
+    /**
+     * Get the character's defense including equipment bonuses
+     */
+    getDefense() {
+        let defense = 0;
+        if (this.equipment && this.equipment.stats.defense) {
+            defense += this.equipment.stats.defense;
+        }
+        return defense;
+    }
+    
     takeDamage(damage){
+        // Si les dégâts sont positifs (une attaque), appliquer la défense
+        if (damage > 0) {
+            const defense = this.getDefense();
+            if (defense > 0) {
+                const reducedDamage = Math.max(1, damage - defense); // Au moins 1 point de dégât
+                console.log(chalk.cyan(`${this.name} bloque ${defense} points de dégâts grâce à sa défense !`));
+                damage = reducedDamage;
+            }
+        }
+        
         this.hp -= damage;
         if(this.hp < 0){
             this.hp = 0;
