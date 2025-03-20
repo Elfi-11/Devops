@@ -106,7 +106,7 @@ export class Character {
 
 export const characterList = [
     new Character("Mathys", "Mage", 60, 8, 10, "dps"),
-    new Character("Rémi", "Mage noir", 60, 363, 8,"dps"),
+    new Character("Rémi", "Mage noir", 999, 666, 33,"dps"),
     new Character("Micael", "Voleur", 50, 15, 20, "dps"),
     new Character("Romain", "Guerrier", 150, 9, 10, "dps"),
     new Character("Marina", "Prêtre", 30, 10, 12, "healer"),
