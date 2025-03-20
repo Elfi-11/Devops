@@ -138,26 +138,31 @@ export class Character {
     Heal(target) {
         const diceValue = Math.floor(Math.random() * 20) + 1;
         console.log(`Résultat du dé 20 : ${diceValue}`);
+        
+        // Utiliser getDamage() pour inclure les bonus d'équipement
+        const healValue = this.getDamage();
+        
         switch (diceValue) {
             case 1:
                 console.log(chalk.red(`${this.name} blesse son allié ! 💥 (Échec critique)`));
-                target.takeDamage(this.damage);
+                target.takeDamage(healValue);
                 break;
             case 2:
                 console.log(chalk.green(`${this.name} n'arrive pas a soigné ${target.name} ! 💨`));
                 break;
             case 19:
-                console.log(chalk.red(`${this.name} Soigne son allié pour ${this.damage} PV`));
-                target.takeDamage(-this.damage);
+                console.log(chalk.red(`${this.name} Soigne son allié pour ${healValue} PV`));
+                target.takeDamage(-healValue);
                 break;
             case 20:
                 console.log(chalk.green(`${this.name} soigne très fort ${target.name} ! ⚡ (Coup critique)`));
-                target.takeDamage(this.damage * -2);
+                target.takeDamage(healValue * -2);
                 break;
             default:
-                const damagePerDiceFace = this.damage / 20;
-                console.log(chalk.red(`${this.name} Soigne son allié pour ${this.damage} PV`));
-                target.takeDamage(Math.floor(damagePerDiceFace * diceValue));
+                const healPerDiceFace = healValue / 20;
+                const finalHeal = Math.floor(healPerDiceFace * diceValue);
+                console.log(chalk.red(`${this.name} Soigne son allié pour ${finalHeal} PV`));
+                target.takeDamage(-finalHeal);
                 break;
         }
     };
