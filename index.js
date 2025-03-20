@@ -42,8 +42,8 @@ async function mainMenu() {
       } catch (error) {
         console.error(chalk.red('❌ Erreur lors du combat:', error.message));
         console.log(chalk.cyan('\nRetour au menu principal dans 3 secondes...'));
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        return mainMenu();
+        // await new Promise(resolve => setTimeout(resolve, 3000));
+        // return mainMenu();
       }
     case 'quit':
       console.log(chalk.magenta('\n👋 Au revoir ! À bientôt dans le monde fantastique.\n'));

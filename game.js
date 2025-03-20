@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import CLI from 'clui';
 import clc from 'cli-color';
+import { Character } from './characters.js';
 const { Line } = CLI;
 
 
@@ -22,7 +23,9 @@ export async function startGame(teams) {
 }
 
 function drawBattleScreen(player, enemy) {
-    console.clear();
+    // Constantes pour les couleurs des équipes
+    const TEAM1_COLOR = chalk.blue;
+    const TEAM2_COLOR = chalk.red;
     
     // Titre du combat
     console.log(chalk.bold.yellow(`\n⚔️ === COMBAT EN COURS === ⚔️\n`));
@@ -42,48 +45,117 @@ function drawBattleScreen(player, enemy) {
     console.log(chalk.yellow(`\n${'='.repeat(80)}\n`));
 }
 
-async function gameLoop(player, enemy) {
-    // Constantes pour les couleurs des équipes
-    const TEAM1_COLOR = chalk.blue;
-    const TEAM2_COLOR = chalk.red;
-
+async function gameLoop(teams) {
     let round = 1;
+
+    const team1 = teams[0].characters
+        .map((character, index) => {
+            character.indexes = [0, index];
+            return {...character};
+        })
     
-    // Ordonner les personnages par vitesse d'attaque
-    
-    
-    while (player.isAlive && enemy.isAlive) {
+    const team2 = teams[1].characters
+        .map((character, index) => {
+            character.indexes = [1, index];
+            return {...character};
+        })
+
+    var team1alive = true;
+    var team2alive = true;
+
+    while(team1alive && team2alive) {
+
         console.log(chalk.cyan(`\n🔄 --- Round ${round} --- 🔄`));
 
-        displayGameState(teams);
-        
-        // Petite pause entre les rounds
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Premier attaquant
-        await processAttack(firstAttacker, secondAttacker, player);
-        
-        // Vérifier si le second attaquant est toujours en vie
-        if (!secondAttacker.isAlive) {
-            return { winner: firstAttacker, loser: secondAttacker };
+        // Ordonner les personnages par vitesse d'attaque
+        const contenders = team1
+        .concat(team2)
+        .filter(contender => contender.hp > 0)
+        .sort((a, b) => {
+            const speedA = a.speed;
+            const speedB = b.speed;
+
+            return speedB - speedA;
+        }); 
+
+        while(contenders.length > 0) {
+    
+            var fastest = contenders[0];
+    
+            var equivalents = contenders.filter(character => character.speed == fastest.speed);
+    
+            var player;
+            if (equivalents.length > 1) {
+                const random = generateRandomBetween(0, equivalents.length-1);
+                player = contenders[random];
+                contenders.splice(random, 1);
+            } else {
+                player = fastest;
+                contenders.splice(0, 1);
+            }
+
+            var attacker = new Character(player.name, player.classe, player.maxHp, player.damage, player.speed);
+
+            console.log(attacker);
+
+            if(player.hp > 0) {
+
+                if(player.indexes[0] == 0) {
+                    var opponent = team2[generateRandomBetween(0, team2.length)];
+                    attacker.attack(opponent);
+                }
+                if(player.indexes[0] == 1) {
+                    var opponent = team1[generateRandomBetween(0, team1.length)];
+                    attacker.attack(opponent);
+                }
+
+                displayGameState(team1, team2);
+                // drawBattleScreen(player, opponent);
+            }
         }
-        
-        // Petite pause entre les attaques
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Second attaquant
-        await processAttack(secondAttacker, firstAttacker, player);
-        
-        // Vérifier si le premier attaquant est toujours en vie
-        if (!firstAttacker.isAlive) {
-            return { winner: secondAttacker, loser: firstAttacker };
-        }
-        
+
         round++;
+
+        var team1hp = team1.reduce((prev, act) => {
+            return prev + act.hp;
+        }, 0);
+        if(team1hp < 1) {
+            team1alive = false;
+        }
+        var team2hp = team2.reduce((prev, act) => {
+            return prev + act.hp;
+        }, 0);
+        if(team2hp < 1) {
+            team2alive = false;
+        }
+    }
+    
+
+        // // Petite pause entre les rounds
+        // await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // // Premier attaquant
+        // await processAttack(firstAttacker, secondAttacker, player);
+        
+        // // Vérifier si le second attaquant est toujours en vie
+        // if (!secondAttacker.isAlive) {
+        //     return { winner: firstAttacker, loser: secondAttacker };
+        // }
+        
+        // // Petite pause entre les attaques
+        // await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // // Second attaquant
+        // await processAttack(secondAttacker, firstAttacker, player);
+        
+        // // Vérifier si le premier attaquant est toujours en vie
+        // if (!firstAttacker.isAlive) {
+        //     return { winner: secondAttacker, loser: firstAttacker };
+        // }
+        
+        // round++;
         
         // Redessiner l'écran de combat à la fin du round
-        drawBattleScreen(player, enemy);
-    }
 }
 
 async function processAttack(attacker, defender, player) {
@@ -166,16 +238,13 @@ function getClassEmoji(classe) {
     }
 }
 
-function displayGameState(teams) {
-    const team1 = teams[0];
-    const team2 = teams[1];
-
+function displayGameState(team1, team2) {
     var totalLines;
 
-    if (team1.characters.length > team2.characters.length) {
-        totalLines = team1.characters.length
+    if (team1.length > team2.length) {
+        totalLines = team1.length
     } else {
-        totalLines = team2.characters.length
+        totalLines = team2.length
     }
 
     console.log(totalLines);
@@ -189,8 +258,8 @@ function displayGameState(teams) {
 
     var line;
     for(var l = 0; l < totalLines; l++) {
-        const character1 = team1.characters[l] ?? null;
-        const character2 = team2.characters[l] ?? null;
+        const character1 = team1[l] ?? null;
+        const character2 = team2[l] ?? null;
         line = new Line(outputBuffer);
 
         if (character1) {
@@ -209,7 +278,7 @@ function displayGameState(teams) {
         
         if (character2) {
             line = line
-                .column(`${character1.hp}/${character1.maxHp} HP`, 10, [clc.red])
+                .column(`${character2.hp}/${character2.maxHp} HP`, 10, [clc.red])
                 .column(getHealthBar(character2.hp, character2.maxHp, 15), 17, [clc.red])
                 .column(character2.name, 10, [clc.red]);
         } else {
@@ -223,4 +292,8 @@ function displayGameState(teams) {
     }
 
     outputBuffer.output();
+}
+
+function generateRandomBetween(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
 }
