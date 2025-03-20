@@ -13,7 +13,6 @@ export async function startGame(player, enemy) {
     
     console.log(chalk.bold(`${playerDisplay} ${chalk.yellow(' VS ')} ${enemyDisplay}`));
     
-    // Réinitialiser les PV des personnages
     player.init();
     enemy.init();
     
@@ -140,10 +139,8 @@ async function animateImpact(color, damage) {
 export async function endGame(result) {
     console.clear();
     
-    // Animation de victoire
     const victoryFrames = [' 🏆 ', ' ✨ ', ' 🎉 ', ' ⭐ ', ' 🏆 '];
-    for (let i = 0; i < 3; i++) {  // Répéter l'animation 3 fois
-        for (const frame of victoryFrames) {
+    for (let i = 0; i < 3; i++) {         for (const frame of victoryFrames) {
             console.clear();
             console.log(chalk.bold.yellow(`\n${frame} === FIN DU COMBAT === ${frame}\n`));
             await new Promise(resolve => setTimeout(resolve, 150));
@@ -159,12 +156,10 @@ export async function endGame(result) {
     const winnerColor = result.winner === global.player ? TEAM1_COLOR : TEAM2_COLOR;
     const loserColor = result.loser === global.player ? TEAM1_COLOR : TEAM2_COLOR;
     
-    // Affichage du vainqueur avec effet spécial
     console.log(chalk.bold(`\n${'-'.repeat(30)} VAINQUEUR ${'-'.repeat(30)}\n`));
     console.log(winnerColor.bold(`     ${winnerEmoji} ${result.winner.name.toUpperCase()} (${result.winner.classe})  🎖️  `));
     console.log(winnerColor(`     HP restants: ${result.winner.hp}/${result.winner.maxHp} ${getHealthBar(result.winner.hp, result.winner.maxHp)}`));
     
-    // Remplacer chalk.rainbow par une alternance de couleurs
     console.log('\n' + chalk.bold.green(' 🎊 ') + chalk.bold.yellow(' F') + chalk.bold.blue('É') + 
         chalk.bold.red('L') + chalk.bold.magenta('I') + chalk.bold.cyan('C') + 
         chalk.bold.green('I') + chalk.bold.yellow('T') + chalk.bold.blue('A') + 
@@ -174,11 +169,9 @@ export async function endGame(result) {
     console.log(chalk.dim(`\n${'-'.repeat(30)} VAINCU ${'-'.repeat(32)}\n`));
     console.log(loserColor(`     ${loserEmoji} ${result.loser.name} (${result.loser.classe})  💀  `));
     
-    // Pause longue pour apprécier le résultat
     console.log(chalk.cyan(`\nRetour au menu principal dans 7 secondes... `));
     await new Promise(resolve => setTimeout(resolve, 7000));
     
-    // Définir cette variable pour le prochain combat
     global.player = undefined;
     
     return result;
