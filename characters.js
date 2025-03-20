@@ -29,29 +29,35 @@ export class Character {
             console.log(chalk.yellow(`${this.name} attaque ${target.name} avec son poing et inflige ${damage} points de dégâts !`));
         }
     };
+    takeDamage(damage){
+        this.hp -= damage;
+        if(this.hp < 0){
+            this.hp = 0;
+        }
+    }
     attack(target) {
         const diceValue = Math.floor(Math.random() * 20) + 1;
         console.log(`Résultat du dé 20 : ${diceValue}`);
         switch (diceValue) {
             case 1:
                 console.log(chalk.red(`${this.name} se blesse lui-même ! 💥 (Échec critique)`));
-                this.hp -= this.damage;
+                this.takeDamage(this.damage);
                 break;
             case 2:
                 console.log(chalk.green(`${this.name} rate le coup porté à ${target.name} ! 💨`));
                 break;
             case 19:
                 this.attackText(target, this.damage)
-                target.hp -= this.damage;
+                target.takeDamage(this.damage);
                 break;
             case 20:
                 console.log(chalk.green(`${this.name} inflige un coup critique à ${target.name} ! ⚡ (Coup critique)`));
-                target.hp -= this.damage * 2;
+                target.takeDamage(this.damage * 2);
                 break;
             default:
                 const damagePerDiceFace = this.damage / 20;
                 this.attackText(target, Math.floor(damagePerDiceFace * diceValue));
-                target.hp -= Math.floor(damagePerDiceFace * diceValue);
+                target.takeDamage(Math.floor(damagePerDiceFace * diceValue));
                 break;
         }
     };
