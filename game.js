@@ -102,8 +102,8 @@ function drawBattleScreen(player, enemy) {
     console.log(`${TEAM1_COLOR(playerName.padEnd(35))}${chalk.yellow(' VS ')}${TEAM2_COLOR(enemyName.padStart(35))}`);
     
     // Afficher les équipements
-    let playerEquipText = player.equipment ? `[🛡️ ${player.equipment.name}]` : '';
-    let enemyEquipText = enemy.equipment ? `[🛡️ ${enemy.equipment.name}]` : '';
+    let playerEquipText = player.equipment ? `[🛡️  ${player.equipment.name}]` : '';
+    let enemyEquipText = enemy.equipment ? `[🛡️  ${enemy.equipment.name}]` : '';
     console.log(`${TEAM1_COLOR(playerEquipText.padEnd(35))}${' '.repeat(4)}${TEAM2_COLOR(enemyEquipText.padStart(35))}`);
     
     // Barres de santé
